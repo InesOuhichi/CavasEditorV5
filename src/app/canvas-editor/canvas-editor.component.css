@@ -1,0 +1,26 @@
+/* General Styles */
+.container {
+  display: flex;
+  height: 100vh; 
+  font-family: sans-serif;
+}
+
+app-tools-sidebar {
+  width: 100px; 
+  background-color: #333;
+  color: white;
+  flex-shrink: 0; 
+}
+
+app-canvas {
+  flex-grow: 1; 
+  background-color: #f0f0f0;
+}
+
+app-properties-sidebar {
+  width: 300px; 
+  background-color: #eee;
+  flex-shrink: 0; 
+}
+
+

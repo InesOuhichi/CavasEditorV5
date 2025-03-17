@@ -1,0 +1,14 @@
+
+<div
+  class="floating-toolbar"
+  [style.left.px]="position.left"
+  [style.top.px]="position.top"
+>
+  <button (click)="groupObjects()" *ngIf="isMultipleSelected() ">
+    Group
+  </button>
+  <button (click)="ungroupObjects()" *ngIf="isGroupSelected() ">
+    Ungroup
+  </button>
+  
+</div>

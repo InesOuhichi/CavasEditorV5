@@ -1,0 +1,48 @@
+<div class="tools">
+  <h1>Tools</h1>
+  
+    <button (click)="selectTool('rect')" title="Rectangle">
+      <i class="material-icons">crop_square</i>
+    </button>
+
+    <button (click)="selectTool('circle')" title="Circle">
+      <i class="material-icons">radio_button_unchecked</i>
+    </button>
+
+    <button (click)="selectTool('triangle')" title="Triangle">
+      <i class="material-icons">change_history</i>
+    </button>
+
+    <button (click)="selectTool('line')" title="Line">
+      <i class="material-icons">remove</i>
+    </button>
+
+    <button (click)="selectTool('ellipse')" title="Ellipse">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="12" cy="12" rx="10" ry="5" stroke="white" stroke-width="2" fill="none"/>
+      </svg>    
+    </button>
+
+    <button (click)="selectTool('text')" title="Text">
+      <i class="material-icons">text_fields</i>
+    </button>
+
+    <button (click)="selectTool('polygon')" title="Polygon">
+      <i class="material-icons">pentagon</i>
+    </button>
+    
+    <div class="separator">
+
+    <button (click)="undo()" title="Undo">
+      <i class="material-icons">undo</i>
+    </button>
+  
+    <button (click)="redo()" title="Redo">
+      <i class="material-icons">redo</i>
+    </button>
+  
+    <button (click)="resetCanvas()" title="Reset">
+      <i class="material-icons">refresh</i>
+    </button>
+   </div>
+</div>

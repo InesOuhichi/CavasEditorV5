@@ -1,0 +1,15 @@
+<div class="canvas-area">
+  <h2>Canvas Editor</h2>
+ 
+  <div class="canvas-container">
+   <canvas #canvasElement id="fabricCanvas"></canvas>
+   <app-floating-toolbar
+     *ngIf="showFloatingToolbar"
+     [canvas]="canvas"
+     [position]="toolbarPosition"
+   ></app-floating-toolbar>
+  </div>
+</div>
+ 
+
+

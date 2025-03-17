@@ -1,0 +1,67 @@
+<div class="properties-sidebar">
+<div *ngIf="!selectedObject">
+  <h2>Properties</h2>
+<p>Select an object to edit its properties.</p>
+</div>
+
+<div *ngIf="selectedObject" class="properties-sidebar">
+  <h3>Properties</h3>
+  <label>Left: <input type="number" [(ngModel)]="objectLeft" (change)="applyPropertyChanges()"></label>
+  <label>Top: <input type="number" [(ngModel)]="objectTop" (change)="applyPropertyChanges()"></label>
+  <label>Angle: <input type="number" [(ngModel)]="objectAngle" (change)="applyPropertyChanges()"></label>
+  <label>Fill: <input type="color" [(ngModel)]="fillColor" (change)="applyPropertyChanges()"></label>
+  <label>Stroke: <input type="color" [(ngModel)]="strokeColor" (change)="applyPropertyChanges()"></label>
+  <label>Stroke Width: <input type="number" [(ngModel)]="strokeWidth" (change)="applyPropertyChanges()"></label>
+
+  <div *ngIf="selectedObject.getShape().type === 'circle'">
+    <label>Radius: <input type="number" [(ngModel)]="circleRadius" (change)="applyPropertyChanges()"></label>
+  </div>
+  <div *ngIf="selectedObject.getShape().type === 'ellipse'">
+    <label>Radius X: <input type="number" [(ngModel)]="ellipseRx" (change)="applyPropertyChanges()"></label>
+    <label>Radius Y: <input type="number" [(ngModel)]="ellipseRy" (change)="applyPropertyChanges()"></label>
+  </div>
+  <div *ngIf="selectedObject.getShape().type === 'rect' || selectedObject.getShape().type === 'triangle'">
+    <label>Width: <input type="number" [(ngModel)]="rectWidth" (change)="applyPropertyChanges()"></label>
+    <label>Height: <input type="number" [(ngModel)]="rectHeight" (change)="applyPropertyChanges()"></label>
+  </div>
+  <div *ngIf="selectedObject.getShape().type === 'line' || (selectedObject.getShape().type === 'path' && selectedObject.getShape().data?.type === 'curvedLine')">
+    <label>X1: <input type="number" [(ngModel)]="lineX1" (change)="applyPropertyChanges()"></label>
+    <label>Y1: <input type="number" [(ngModel)]="lineY1" (change)="applyPropertyChanges()"></label>
+    <label>X2: <input type="number" [(ngModel)]="lineX2" (change)="applyPropertyChanges()"></label>
+    <label>Y2: <input type="number" [(ngModel)]="lineY2" (change)="applyPropertyChanges()"></label>
+  </div>
+  <div *ngIf="selectedObject.getShape().type === 'i-text'">
+    <label>Text: <input type="text" [(ngModel)]="text" (change)="applyPropertyChanges()"></label>
+    <label>Font Family: <input type="text" [(ngModel)]="fontFamily" (change)="applyPropertyChanges()"></label>
+    <label>Font Size: <input type="number" [(ngModel)]="fontSize" (change)="applyPropertyChanges()"></label>
+    <label>Font Weight: 
+      <select [(ngModel)]="fontWeight" (change)="applyPropertyChanges()">
+        <option value="normal">Normal</option>
+        <option value="bold">Bold</option>
+      </select>
+    </label>
+    <label>Text Align: 
+      <select [(ngModel)]="textAlign" (change)="applyPropertyChanges()">
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+      </select>
+    </label>
+    <label>Transform: 
+      <select [(ngModel)]="textTransform" (change)="applyPropertyChanges()">
+        <option value="none">None</option>
+        <option value="uppercase">Uppercase</option>
+        <option value="lowercase">Lowercase</option>
+        <option value="capitalize">Capitalize</option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="selectedObject.getShape().type === 'polygon'">
+    <label>Hatch Color: <input type="color" [(ngModel)]="hatchColor" (change)="applyPropertyChanges()"></label>
+    <label>Hatch Thickness: <input type="number" [(ngModel)]="hatchThickness" (change)="applyPropertyChanges()"></label>
+  </div>
+</div>
+
+
+</div>

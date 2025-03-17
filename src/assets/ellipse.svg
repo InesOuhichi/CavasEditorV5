@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="rgba(255, 0, 0, 0.5)" /> <!-- Red with 50% opacity -->
+      <stop offset="100%" stop-color="rgba(0, 0, 255, 0.5)" /> <!-- Blue with 50% opacity -->
+    </linearGradient>
+  </defs>
+
+  <ellipse cx="200" cy="150" rx="150" ry="100"
+           fill="url(#gradient)"
+           stroke="black"
+           stroke-width="2"
+           opacity="0.8" /> <!-- overall opacity for the whole ellipse -->
+</svg>
