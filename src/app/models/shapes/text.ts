@@ -28,11 +28,15 @@ export class Text extends BaseShape {
       textAlign: this.textProps.textAlign || 'left',
       data: { modelId: this.id, type: 'i-text' },
     });
+    this.canvas.add(this.shape);
+    this.canvas.renderAll();
   }
 
   updateShape(x: number, y: number): void {
     // No dynamic resizing during drawing
   }
+
+  
 
   updateFromProperties(properties: any): void {
     const text = this.shape as fabric.IText;
@@ -42,7 +46,7 @@ export class Text extends BaseShape {
       scaleX: properties.objectScaleX ?? text.scaleX,
       scaleY: properties.objectScaleY ?? text.scaleY,
       angle: properties.objectAngle ?? text.angle,
-      text: properties.text ?? text.text,
+      text: properties.text ,
       fontFamily: properties.fontFamily ?? text.fontFamily,
       fontSize: properties.fontSize ?? text.fontSize,
       fontWeight: properties.fontWeight ?? text.fontWeight,

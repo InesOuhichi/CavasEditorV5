@@ -48,8 +48,7 @@ export class CanvasComponent {
 
 
     this.canvas.on('object:modified', (e) => this.onObjectModified(e));
-    this.canvas.on('object:scaling', (e) => this.onObjectModified(e));
-    this.canvas.on('object:rotating', (e) => this.onObjectModified(e));
+ 
 
     this.canvas.on('object:removed', (e) => {
       if (e.target) {
@@ -74,7 +73,7 @@ export class CanvasComponent {
 
     
     });
-     
+  
   
 
   }
@@ -183,6 +182,22 @@ export class CanvasComponent {
     }
   }
 
+//Updates the selected object and canvas state when text is edited.
+private onTextChanged(event: any): void {
+  if (event && event.target && event.target.type === 'i-text') {
+    const shape = this.canvasEditorService.getShapeByFabricObject(event.target!);
+    //const activeObject = this.canvas.getActiveObject();
+    //this.canvasEditorService.getShapeByFabricObject(activeObject!);
+    if (shape === this.canvasEditorService.selectedObjectSubject.value) {
+      this.canvasEditorService.setSelectedObject(shape); 
+    }
+    const canvas = this.canvasEditorService.getCanvas()
+    if(canvas){
+      
+      this.canvasEditorService.pushState(canvas);
+    }
+  }
+}
 
 
   private updateToolbarPosition(activeObjects: fabric.Object[]): void {
@@ -229,17 +244,7 @@ export class CanvasComponent {
 
 
  
-  //Updates the selected object and canvas state when text is edited.
-  private onTextChanged(event: any): void {
-    if (event && event.target && event.target.type === 'i-text') {
-      this.canvasEditorService.setSelectedObject(event.target);
-      const canvas = this.canvasEditorService.getCanvas()
-      if(canvas){
-        this.canvasEditorService.pushState(canvas);
-      }
-    }
-  }
-
+  
  
 
 }

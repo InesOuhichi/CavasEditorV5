@@ -14,6 +14,8 @@ import { Rectangle } from '../../models/shapes/rectangle';
 import { Polygon } from '../../models/shapes/polygon';
 import { Line } from '../../models/shapes/line';
 import { Circle } from '../../models/shapes/circle';
+import { Text } from '../../models/shapes/text';
+import { ConnectedCircles } from '../../models/shapes/connected-circles';
 @Component({
   selector: 'app-properties-sidebar',
   standalone: true,
@@ -76,11 +78,10 @@ export class PropertiesSidebarComponent {
     });
   
   }
-
+ 
     //Updates the properties displayed in the sidebar based on the selected object.
 
   updateProperties(): void {
-    console.log('update properties')
     if (!this.selectedObject) {
       this.clearProperties();
       return;
@@ -132,12 +133,17 @@ export class PropertiesSidebarComponent {
       this.rectWidth = Number((triangle.width! * (triangle.scaleX || 1)).toFixed(0));
       this.rectHeight = Number((triangle.height! * (triangle.scaleY || 1)).toFixed(0));
     }
+      else if (this.selectedObject instanceof ConnectedCircles) {
+        const props = this.selectedObject.getProperties();
+        this.circleRadius = props.radius || 20;
+        this.fillColor = props.fillColor || '#000000';
+        this.strokeColor = props.strokeColor || '#000000';
+        this.strokeWidth = props.strokeWidth || 2;
   }
-
+  }
   //Applies the changes made in the properties sidebar to the selected object.
 
   applyPropertyChanges(): void {
-    console.log('apply changes')
     if (!this.selectedObject) return;
     const canvas = this.canvasEditorService.getCanvas();
     if (!canvas) return;
@@ -154,7 +160,14 @@ export class PropertiesSidebarComponent {
     };
 
     const shape = this.selectedObject.getShape();
+  
     switch (shape.type) {
+      case 'connectedCircles':
+        properties.radius = this.circleRadius;
+        properties.fillColor = this.fillColor;
+        properties.strokeColor = this.strokeColor;
+        properties.strokeWidth = this.strokeWidth;
+        break
       case 'polygon':
         properties.hatchColor = this.hatchColor;
         properties.hatchThickness = this.hatchThickness;
@@ -197,7 +210,7 @@ export class PropertiesSidebarComponent {
     }
 
     this.canvasEditorService.applyPropertyChanges(this.selectedObject, properties, canvas);
-   // this.selectedObject.updateFromProperties(properties); // Update the model
+    
     canvas.renderAll();
   }
 

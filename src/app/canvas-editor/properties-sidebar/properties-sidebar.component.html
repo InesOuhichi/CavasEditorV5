@@ -31,7 +31,11 @@
     <label>Y2: <input type="number" [(ngModel)]="lineY2" (ngModelChange)="applyPropertyChanges()"></label>
   </div>
   <div *ngIf="selectedObject.getShape().type === 'i-text'">
-    <label>Text: <input type="text" [(ngModel)]="text" (ngModelChange)="applyPropertyChanges()"></label>
+    <label>Text:  <textarea
+     
+      [(ngModel)]="text"
+      (ngModelChange)="applyPropertyChanges()"
+    ></textarea></label>
     <label>Font Family: <input type="text" [(ngModel)]="fontFamily" (ngModelChange)="applyPropertyChanges()"></label>
     <label>Font Size: <input type="number" [(ngModel)]="fontSize" (ngModelChange)="applyPropertyChanges()"></label>
     <label>Font Weight: 

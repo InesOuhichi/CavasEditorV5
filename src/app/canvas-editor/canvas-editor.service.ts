@@ -96,7 +96,7 @@ export class CanvasEditorService {
     const canvas=this.getCanvas()
     this.shapes.push(shape);
     shape.addToCanvas();
-    console.log('Shapes after adding:', this.shapes); 
+    //console.log('Shapes after adding:', this.shapes); 
     this.pushState(canvas!);
   }
 
@@ -123,14 +123,14 @@ export class CanvasEditorService {
   
 
   onSelection(e: fabric.IEvent, canvas: fabric.Canvas): void {
-    console.log('Selection event:', e.selected); 
-    console.log('Shapes during selection:', this.shapes);
+    //.log('Selection event:', e.selected); 
+    //console.log('Shapes during selection:', this.shapes);
     if (e.selected && e.selected.length > 0) {
 
       if (e.selected.length > 1) {
 
         const selection = new fabric.ActiveSelection(e.selected, { canvas });
-        console.log('selection',selection)
+        //console.log('selection',selection)
         selection.set({ 
           hasControls: false, 
           hasBorders: false 
@@ -186,6 +186,7 @@ export class CanvasEditorService {
     this.history = this.history.slice(0, this.historyIndex + 1);
     this.history.push(JSON.stringify(json));
     this.historyIndex++;
+   
   }
 
   undo(): void {
@@ -225,7 +226,7 @@ export class CanvasEditorService {
         }
       });
       this.shapes = newShapes; 
-      console.log('Shapes after loadState:', this.shapes);
+      //console.log('Shapes after loadState:', this.shapes);
       canvas.renderAll();
       this.setSelectedObject(null);
     });
@@ -241,11 +242,19 @@ export class CanvasEditorService {
     if (shapeType === null) {
       return; 
     }
-    
+    console.log('type start drawing',shapeType)
     if (shapeType === 'polygon' && this.currentShape instanceof Polygon && !this.currentShape['isClosed']) {
       this.currentShape.addPoint(x, y);
       return;
     }
+
+   if (this.isDrawing && this.currentShape) {
+    if (shapeType === 'connectedCircles' && this.currentShape instanceof ConnectedCircles && this.currentShape['isDrawing']) {
+      this.currentShape.updateShape(x, y);
+      return;
+    }
+    return;
+  }
     switch (shapeType) {
       case 'polygon':
         shape=new Polygon(canvas,x,y)
@@ -270,14 +279,12 @@ export class CanvasEditorService {
         shape = new Triangle(canvas, x, y);
         break;
 
-        case 'connectedCircles':
-          if (!this.currentShape) {
-            this.currentShape = new ConnectedCircles(canvas, x, y);
-            this.currentShape.addToCanvas();
-          } else {
-            this.currentShape.updateShape(x, y);
-          }
-          return;  
+      case 'connectedCircles':
+
+        shape = new ConnectedCircles(canvas, x, y);
+
+        break;
+          
       
       default:
         return;
@@ -289,7 +296,7 @@ export class CanvasEditorService {
 
 
     this.addShape(shape);
-    if (shapeType !== 'polygon') {
+    if (shapeType !== 'polygon'&& shapeType !== 'connectedCircles') {
       this.setSelectedObject(shape); 
     } 
 
@@ -301,7 +308,7 @@ export class CanvasEditorService {
 
   draw(x: number, y: number, canvas: fabric.Canvas): void {
     const selectedShape = this.currentShape;
-    if (!this.isDrawing || !this.currentShape||this.getSelectedShapeType() === 'connectedCircles' ) return;
+    if (!this.isDrawing || !this.currentShape||this.getSelectedShapeType() == 'connectedCircles' ) return;
     if (selectedShape) {
       selectedShape.updateShape(x, y);
       canvas.renderAll();
@@ -314,6 +321,9 @@ export class CanvasEditorService {
 
   if (this.currentShape instanceof Polygon && !this.currentShape['isClosed']) {
     this.currentShape.addPoint(x, y); 
+  }
+  else if (this.currentShape instanceof ConnectedCircles ) {
+    //this.currentShape.updateShape(x, y);
   } else {
     this.currentShape.setCoords();
     this.setSelectedObject(this.currentShape);
@@ -327,16 +337,13 @@ export class CanvasEditorService {
   //Completes and closes a polygon.
   closePolygonDrawing(canvas: fabric.Canvas): void {
     if (this.currentShape instanceof Polygon && !this.currentShape['isClosed']) {
-      console.log('Shapes before closing:', this.shapes);
       this.currentShape.closePolygon();
-      console.log('Shapes after closing:', this.shapes); 
 
       // Ensure the shape is still in the shapes array
       if (!this.shapes.includes(this.currentShape)) {
         this.shapes.push(this.currentShape);
       }
 
-   
       canvas.selection = true; 
       this.setSelectedObject(this.currentShape);
       canvas.setActiveObject(this.currentShape.getShape()); 
@@ -349,22 +356,19 @@ export class CanvasEditorService {
   }}
 
   finishDrawing(canvas: fabric.Canvas): void {
-    console.log('finish drawing method called')
-    if (this.currentShape) {
-      if (this.currentShape instanceof ConnectedCircles) {
-        console.log('current shape',this.currentShape)
-        this.currentShape.finishDrawing();
-      }
-      this.currentShape.setCoords();
-      canvas.setActiveObject(this.currentShape.getShape());
+    if (this.currentShape instanceof ConnectedCircles ) {
+      this.currentShape.finishDrawing();
+      
+      canvas.selection = true; 
+
       this.setSelectedObject(this.currentShape);
+      canvas.setActiveObject(this.currentShape.getShape()); 
+      this.pushState(canvas);
+      this.currentShape = null;
+      this.setSelectedShapeType(null);
+      this.isDrawing = false;
+      canvas.renderAll();
     }
-    this.isDrawing = false;
-    this.currentShape = null;
-    this.setSelectedShapeType(null);
-    canvas.defaultCursor = 'default';
-    canvas.selection = true;
-    this.pushState(canvas);
   }
  
 
