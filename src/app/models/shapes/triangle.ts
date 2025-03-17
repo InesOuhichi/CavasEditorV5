@@ -42,6 +42,8 @@ export class Triangle extends BaseShape {
       angle: properties.objectAngle ?? triangle.angle,
       fill: properties.fillColor ?? triangle.fill,
       stroke: properties.strokeColor ?? triangle.stroke,
+      strokeWidth: properties.strokeWidth || this.shape.strokeWidth,
+
     });
     triangle.setCoords();
     this.canvas.requestRenderAll();

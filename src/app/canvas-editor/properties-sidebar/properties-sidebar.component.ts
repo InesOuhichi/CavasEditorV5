@@ -73,12 +73,14 @@ export class PropertiesSidebarComponent {
       } else {
         this.clearProperties();
       }
-
-    }
-  );
+    });
+  
   }
 
+    //Updates the properties displayed in the sidebar based on the selected object.
+
   updateProperties(): void {
+    console.log('update properties')
     if (!this.selectedObject) {
       this.clearProperties();
       return;
@@ -101,9 +103,11 @@ export class PropertiesSidebarComponent {
   
     if (this.selectedObject instanceof Circle) {
       const circle = shape as fabric.Circle;
+
       this.circleRadius = Number((circle.radius! * (circle.scaleX || 1)).toFixed(0));
     } else if (this.selectedObject instanceof Rectangle) {
       const rect = shape as fabric.Rect;
+      
       this.rectWidth = Number((rect.width! * (rect.scaleX || 1)).toFixed(0)); 
       this.rectHeight = Number((rect.height! * (rect.scaleY || 1)).toFixed(0)); 
     } else if (this.selectedObject instanceof Ellipse) {
@@ -130,8 +134,10 @@ export class PropertiesSidebarComponent {
     }
   }
 
+  //Applies the changes made in the properties sidebar to the selected object.
 
   applyPropertyChanges(): void {
+    console.log('apply changes')
     if (!this.selectedObject) return;
     const canvas = this.canvasEditorService.getCanvas();
     if (!canvas) return;
@@ -155,29 +161,29 @@ export class PropertiesSidebarComponent {
 
         break;
       case 'circle':
-        properties.circleRadius = this.circleRadius;
+        properties.circleRadius = this.circleRadius /shape.scaleX!;
         break;
       case 'ellipse':
-        properties.ellipseRx = this.ellipseRx;
-        properties.ellipseRy = this.ellipseRy;
+        properties.ellipseRx = this.ellipseRx/shape.scaleX!;
+        properties.ellipseRy = this.ellipseRy/shape.scaleY!;
         break;
       case 'rect':
       case 'triangle':
-        properties.rectWidth = this.rectWidth;
-        properties.rectHeight = this.rectHeight;
+        properties.rectWidth = this.rectWidth/shape.scaleX!;
+        properties.rectHeight = this.rectHeight/shape.scaleY!;
         break;
       case 'line':
-        properties.lineX1 = this.lineX1;
-        properties.lineY1 = this.lineY1;
-        properties.lineX2 = this.lineX2;
-        properties.lineY2 = this.lineY2;
+        properties.lineX1 = this.lineX1/shape.scaleX!;
+        properties.lineY1 = this.lineY1/shape.scaleY!;
+        properties.lineX2 = this.lineX2/shape.scaleX!;
+        properties.lineY2 = this.lineY2/shape.scaleY!;
         break;
       case 'path':
         if (shape.data?.type === 'curvedLine') {
-          properties.startX = this.lineX1;
-          properties.startY = this.lineY1;
-          properties.endX = this.lineX2;
-          properties.endY = this.lineY2;
+          properties.startX = this.lineX1/shape.scaleX!;
+          properties.startY = this.lineY1/shape.scaleY!;
+          properties.endX = this.lineX2/shape.scaleX!;
+          properties.endY = this.lineY2/shape.scaleY!;
         }
         break;
       case 'i-text':
@@ -191,6 +197,8 @@ export class PropertiesSidebarComponent {
     }
 
     this.canvasEditorService.applyPropertyChanges(this.selectedObject, properties, canvas);
+   // this.selectedObject.updateFromProperties(properties); // Update the model
+    canvas.renderAll();
   }
 
   private clearProperties(): void {

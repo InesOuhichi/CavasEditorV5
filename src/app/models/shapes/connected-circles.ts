@@ -18,9 +18,12 @@ export class ConnectedCircles extends BaseShape {
     super(canvas, x, y);
     console.log('Initial click coordinates:', x, y);
     this.addCircle(x, y);
+    this.shape.set({ data: { modelId: this.id } });
+
   }
 
   createShape(x: number, y: number): void {
+    console.log('create shape')
     if (this.isDrawing) {
       this.addCircle(x, y);
     }

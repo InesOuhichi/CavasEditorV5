@@ -66,6 +66,11 @@ export class CanvasComponent {
       if (this.canvasEditorService.getSelectedShapeType() === 'polygon') {
         this.canvasEditorService.closePolygonDrawing(this.canvas);
       }
+      else if (this.canvasEditorService.getSelectedShapeType() === 'connectedCircles') {
+        console.log('shape double click',this.canvasEditorService.getSelectedShapeType())
+        console.log('Double-click detected, finishing drawing');
+        this.canvasEditorService.finishDrawing(this.canvas);
+      }
 
     
     });
@@ -161,6 +166,10 @@ export class CanvasComponent {
         this.canvasEditorService.getShapeByFabricObject(activeObject!);
         const canvas = this.canvasEditorService.getCanvas()
         if(canvas){
+          // Update the selected object to reflect the modified state
+          if (shape === this.canvasEditorService.selectedObjectSubject.value) {
+            this.canvasEditorService.setSelectedObject(shape); 
+          }
           this.canvasEditorService.pushState(canvas);
         }
     }else {
@@ -173,6 +182,8 @@ export class CanvasComponent {
       canvas.renderAll();}
     }
   }
+
+
 
   private updateToolbarPosition(activeObjects: fabric.Object[]): void {
     const group = new fabric.Group(activeObjects);

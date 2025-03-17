@@ -53,6 +53,8 @@ export class Text extends BaseShape {
       textAlign: properties.textAlign ?? text.textAlign,
       fill: properties.fillColor ?? text.fill,
       stroke: properties.strokeColor ?? text.stroke,
+      strokeWidth: properties.strokeWidth || this.shape.strokeWidth,
+
     });
     this.applyTextTransform(text, properties.textTransform);
     text.setCoords();

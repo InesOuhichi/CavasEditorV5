@@ -48,6 +48,8 @@ export class Ellipse extends BaseShape {
       ry: properties.ellipseRy !== undefined ? properties.ellipseRy : ellipse.ry,
       angle: properties.objectAngle ?? ellipse.angle,
       stroke: properties.strokeColor ?? ellipse.stroke,
+      strokeWidth: properties.strokeWidth || this.shape.strokeWidth,
+
     });
 
     if (properties.fillType === 'gradient' && properties.gradientStops) {

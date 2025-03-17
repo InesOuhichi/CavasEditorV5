@@ -37,7 +37,7 @@ export class Line extends BaseShape {
       scaleY: properties.objectScaleY ?? line.scaleY,
       angle: properties.objectAngle ?? line.angle,
       stroke: properties.strokeColor ?? line.stroke,
-      strokeWidth: properties.lineThickness ?? line.strokeWidth,
+      strokeWidth: properties.strokeWidth || this.shape.strokeWidth,
     });
     line.setCoords();
     this.canvas.requestRenderAll();

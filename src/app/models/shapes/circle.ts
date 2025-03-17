@@ -36,6 +36,8 @@ export class Circle extends BaseShape {
       angle: properties.objectAngle ?? circle.angle,
       fill: properties.fillColor ?? circle.fill,
       stroke: properties.strokeColor ?? circle.stroke,
+      strokeWidth: properties.strokeWidth || this.shape.strokeWidth,
+
     });
     circle.setCoords();
     this.canvas.requestRenderAll();

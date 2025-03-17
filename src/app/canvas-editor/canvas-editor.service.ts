@@ -269,6 +269,15 @@ export class CanvasEditorService {
       case 'triangle':
         shape = new Triangle(canvas, x, y);
         break;
+
+        case 'connectedCircles':
+          if (!this.currentShape) {
+            this.currentShape = new ConnectedCircles(canvas, x, y);
+            this.currentShape.addToCanvas();
+          } else {
+            this.currentShape.updateShape(x, y);
+          }
+          return;  
       
       default:
         return;
@@ -292,7 +301,7 @@ export class CanvasEditorService {
 
   draw(x: number, y: number, canvas: fabric.Canvas): void {
     const selectedShape = this.currentShape;
-    if (!this.isDrawing || !this.currentShape ) return;
+    if (!this.isDrawing || !this.currentShape||this.getSelectedShapeType() === 'connectedCircles' ) return;
     if (selectedShape) {
       selectedShape.updateShape(x, y);
       canvas.renderAll();
@@ -339,11 +348,30 @@ export class CanvasEditorService {
     
   }}
 
+  finishDrawing(canvas: fabric.Canvas): void {
+    console.log('finish drawing method called')
+    if (this.currentShape) {
+      if (this.currentShape instanceof ConnectedCircles) {
+        console.log('current shape',this.currentShape)
+        this.currentShape.finishDrawing();
+      }
+      this.currentShape.setCoords();
+      canvas.setActiveObject(this.currentShape.getShape());
+      this.setSelectedObject(this.currentShape);
+    }
+    this.isDrawing = false;
+    this.currentShape = null;
+    this.setSelectedShapeType(null);
+    canvas.defaultCursor = 'default';
+    canvas.selection = true;
+    this.pushState(canvas);
+  }
+ 
 
 
   applyPropertyChanges(shape: BaseShape, properties: any, canvas: fabric.Canvas): void {
     shape.updateFromProperties(properties);
-    shape.setCoords();
+    //shape.setCoords();
     this.setSelectedObject(shape);
     this.pushState(canvas);
   }

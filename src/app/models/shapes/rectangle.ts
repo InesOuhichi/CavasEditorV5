@@ -10,7 +10,8 @@ export class Rectangle extends BaseShape {
   private gradientY2: number = 0;
   private gradientOpacity1: number = 1;
   private gradientOpacity2: number = 1;
-
+  private width: number = 50;
+  private height: number = 50;
   constructor(canvas: fabric.Canvas, x: number, y: number) {
     super(canvas, x, y);
     this.createShape(x, y);
@@ -40,21 +41,40 @@ export class Rectangle extends BaseShape {
     });
   }
 
-  updateFromProperties(properties: any): void {
-    const rect = this.shape as fabric.Rect;
-    rect.set({
-      left: properties.objectLeft ?? rect.left,
-      top: properties.objectTop ?? rect.top,
-      width: properties.rectWidth !== undefined ? properties.rectWidth  : {},
-      height: properties.rectHeight !== undefined ? properties.rectHeight  : {},
-      angle: properties.objectAngle ?? rect.angle,
-      fill: properties.fillColor ?? rect.fill,
+  getProperties(): any {
+    return {
+      left: this.shape.left,
+      top: this.shape.top,
+      angle: this.shape.angle,
+      fillColor: this.shape.fill,
+      strokeColor: this.shape.stroke,
+      strokeWidth: this.shape.strokeWidth,
+      rectWidth: this.width,
+      rectHeight: this.height,
+    };
+    
+  }
 
-      stroke: properties.strokeColor ?? rect.stroke,
-      // Only update width/height if explicitly provided (e.g., from sidebar)
-   // ...(properties.rectWidth !== undefined ? { width: properties.rectWidth / (rect.scaleX || 1) } : {}),
-    //...(properties.rectHeight !== undefined ? { height: properties.rectHeight / (rect.scaleY || 1) } : {}),
+  updateFromProperties(properties: any): void {
+    //const rect = this.shape as fabric.Rect;
+    const rect =this.shape
+    if (!rect) return;
+  
+    rect.set({
+      //left: properties.objectLeft ?? rect.left,
+      left: properties.objectLeft,
+
+      top: properties.objectTop,
+      width: properties.rectWidth ,
+      height: properties.rectHeight ,
+      angle: properties.objectAngle ,
+      fill: properties.fillColor,
+      stroke: properties.strokeColor ,
+      strokeWidth: properties.strokeWidth ,
+      
+      
     });
+    
 
     if (properties.fillType === 'gradient' && properties.gradientStops) {
       const gradient = new fabric.Gradient({
