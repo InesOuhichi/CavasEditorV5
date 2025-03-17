@@ -255,7 +255,7 @@ export class Polygon extends BaseShape {
     this.points[index].y = y;
     polygon.set({ points: [...this.points] });
     polygon.setCoords();
-
+//jkhbgiygygy
     this.vertexPoints[index].set({ left: x, top: y });
     this.vertexPoints[index].setCoords();
 
