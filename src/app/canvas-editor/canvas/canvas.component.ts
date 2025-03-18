@@ -6,6 +6,9 @@ import {   attachServiceToCanvas, cloneControl, createPolygonEdgeControls, delet
 import { CommonModule } from '@angular/common';
 import { FloatingToolbarComponent } from "../floating-toolbar/floating-toolbar.component";
 import { Polygon } from '../../models/shapes/polygon';
+import { ConnectedCircles } from '../../models/shapes/connected-circles';
+import { ClosedConnectedCircles } from '../../models/shapes/closed-connected-circles';
+import { ClosedConnectedEllipses } from '../../models/shapes/closed-connected-ellipses';
 
 @Component({
   selector: 'app-canvas',
@@ -65,7 +68,7 @@ export class CanvasComponent {
       if (this.canvasEditorService.getSelectedShapeType() === 'polygon') {
         this.canvasEditorService.closePolygonDrawing(this.canvas);
       }
-      else if (this.canvasEditorService.getSelectedShapeType() === 'connectedCircles') {
+      else if (this.canvasEditorService.getSelectedShapeType() === 'connectedCircles'|| this.canvasEditorService.getSelectedShapeType() === 'closedConnectedCircles'|| this.canvasEditorService.getSelectedShapeType() === 'closedConnectedEllipses') {
         console.log('shape double click',this.canvasEditorService.getSelectedShapeType())
         console.log('Double-click detected, finishing drawing');
         this.canvasEditorService.finishDrawing(this.canvas);
@@ -143,15 +146,24 @@ export class CanvasComponent {
       });
     this.canvasEditorService.onSelection(e, this.canvas);
     const activeObjects = this.canvas.getActiveObjects();
+
+    const selectedShape = this.canvasEditorService.selectedObjectSubject.value;
+    const isConnectedCircles = selectedShape instanceof ConnectedCircles;
+    const isClosedConnectedCircles = selectedShape instanceof ClosedConnectedCircles;
+    const isClosedConnectedEllipses=selectedShape instanceof ClosedConnectedEllipses
+
     if (activeObjects.length > 1) {
+      console.log('active objects[0]',activeObjects[0])
+
       this.showFloatingToolbar = true;
       this.updateToolbarPosition(activeObjects);
       this.renderSelection = false;
-    } else if (activeObjects.length === 1 && (activeObjects[0].type === 'group')) { 
+    } else if (activeObjects.length === 1 && (activeObjects[0].type === 'group')&& !isConnectedCircles && !isClosedConnectedCircles && !isClosedConnectedEllipses) { 
       this.showFloatingToolbar = true;
       this.updateToolbarPosition(activeObjects);
       this.renderSelection = false;
     } else {
+      console.log('1 object selected ',activeObjects)
       this.showFloatingToolbar = false;
       this.renderSelection = true;
     }

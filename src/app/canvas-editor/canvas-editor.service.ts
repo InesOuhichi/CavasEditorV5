@@ -18,6 +18,8 @@ import { Polyline } from '../models/shapes/polyline';
 import { CurvedLine } from '../models/shapes/curved-line';
 import { AngleIndicator } from '../models/shapes/angleIndicator';
 import { ConnectedCircles } from '../models/shapes/connected-circles';
+import { ClosedConnectedCircles } from '../models/shapes/closed-connected-circles';
+import { ClosedConnectedEllipses } from '../models/shapes/closed-connected-ellipses';
 //import { AngleIndicator } from '../models/shapes/angleIndicator';
 
 @Injectable({
@@ -79,7 +81,13 @@ export class CanvasEditorService {
     this.canvasSubject.next(canvas);
   }
 
+  setPerspectiveAngle(angle: number): void {
+    this.perspectiveAngle = angle;
+  }
 
+  getPerspectiveAngle(): number {
+    return this.perspectiveAngle;
+  }
 
  setSelectedShapeType(type: string | null): void {
     this.selectedShapeType = type;
@@ -232,6 +240,36 @@ export class CanvasEditorService {
     });
   }
   
+// Adds an image as the canvas background and resizes the canvas.
+importImage(imageDataUrl: string, canvas: fabric.Canvas): void {
+  fabric.Image.fromURL(imageDataUrl, (img) => {
+    if (!img.width || !img.height) {
+      console.error('Image dimensions are not available.');
+      return;
+    }
+
+    // Resize the canvas to match the image dimensions
+    canvas.setWidth(img.width);
+    canvas.setHeight(img.height);
+
+    // Set the image as the background
+    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+      originX: 'left',
+      originY: 'top',
+      left: 0,
+      top: 0,
+      scaleX: 1,
+      scaleY: 1,
+    });
+
+    // Ensure the image is not selectable
+    img.selectable = false;
+
+    // Update the canvas state in the history
+    this.pushState(canvas);
+  });
+}
+
 
   
 
@@ -250,6 +288,14 @@ export class CanvasEditorService {
 
    if (this.isDrawing && this.currentShape) {
     if (shapeType === 'connectedCircles' && this.currentShape instanceof ConnectedCircles && this.currentShape['isDrawing']) {
+      this.currentShape.updateShape(x, y);
+      return;
+    }
+    if (shapeType === 'closedConnectedCircles' && this.currentShape instanceof ClosedConnectedCircles && this.currentShape['isDrawing']) {
+      this.currentShape.updateShape(x, y);
+      return;
+    }
+    if (shapeType === 'closedConnectedEllipses' && this.currentShape instanceof ClosedConnectedEllipses && this.currentShape['isDrawing']) {
       this.currentShape.updateShape(x, y);
       return;
     }
@@ -280,23 +326,30 @@ export class CanvasEditorService {
         break;
 
       case 'connectedCircles':
-
         shape = new ConnectedCircles(canvas, x, y);
-
         break;
           
+
+      case 'closedConnectedCircles': 
+        shape = new ClosedConnectedCircles(canvas, x, y);
+        break;
+
+
+      case 'closedConnectedEllipses': 
+        shape = new ClosedConnectedEllipses(canvas, x, y);
+        break;
       
       default:
         return;
       
     }
     this.currentShape=shape,
-    this.applyPerspectiveToShape(this.currentShape.getShape());
      
 
 
     this.addShape(shape);
-    if (shapeType !== 'polygon'&& shapeType !== 'connectedCircles') {
+    if (shapeType !== 'polygon'&& shapeType !== 'connectedCircles' && shapeType !== 'closedConnectedCircles'&& shapeType !== 'closedConnectedEllipses') {
+      this.applyPerspectiveToShape(this.currentShape.getShape());
       this.setSelectedObject(shape); 
     } 
 
@@ -308,7 +361,7 @@ export class CanvasEditorService {
 
   draw(x: number, y: number, canvas: fabric.Canvas): void {
     const selectedShape = this.currentShape;
-    if (!this.isDrawing || !this.currentShape||this.getSelectedShapeType() == 'connectedCircles' ) return;
+    if (!this.isDrawing || !this.currentShape||this.getSelectedShapeType() == 'connectedCircles' ||this.getSelectedShapeType() == 'closedConnectedCircles'||this.getSelectedShapeType() == 'closedConnectedEllipses') return;
     if (selectedShape) {
       selectedShape.updateShape(x, y);
       canvas.renderAll();
@@ -322,7 +375,7 @@ export class CanvasEditorService {
   if (this.currentShape instanceof Polygon && !this.currentShape['isClosed']) {
     this.currentShape.addPoint(x, y); 
   }
-  else if (this.currentShape instanceof ConnectedCircles ) {
+  else if (this.currentShape instanceof ConnectedCircles ||this.currentShape instanceof ClosedConnectedCircles||this.currentShape instanceof ClosedConnectedEllipses) {
     //this.currentShape.updateShape(x, y);
   } else {
     this.currentShape.setCoords();
@@ -356,7 +409,7 @@ export class CanvasEditorService {
   }}
 
   finishDrawing(canvas: fabric.Canvas): void {
-    if (this.currentShape instanceof ConnectedCircles ) {
+    if (this.currentShape instanceof ConnectedCircles ||this.currentShape instanceof ClosedConnectedCircles||this.currentShape instanceof ClosedConnectedEllipses ) {
       this.currentShape.finishDrawing();
       
       canvas.selection = true; 
@@ -370,7 +423,7 @@ export class CanvasEditorService {
       canvas.renderAll();
     }
   }
- 
+    
 
 
   applyPropertyChanges(shape: BaseShape, properties: any, canvas: fabric.Canvas): void {
@@ -466,9 +519,7 @@ export class CanvasEditorService {
         obj.setCoords();
       }
     }
-    getPerspectiveAngle(): number {
-      return this.perspectiveAngle;
-    }
+  
   //Resets the canvas to its initial state.
   reset(canvas: fabric.Canvas): void {
     canvas.clear();

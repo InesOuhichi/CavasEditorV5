@@ -40,7 +40,7 @@ export class FloatingToolbarComponent {
   //Determines if multiple objects are selected, excluding SVGs.
   isMultipleSelected(): boolean {
     const activeObjects = this.canvas?.getActiveObjects() || [];
-    return activeObjects.length > 1 && !activeObjects.some(obj => obj.type === 'svg');
+    return activeObjects.length > 1;
   }
 
   

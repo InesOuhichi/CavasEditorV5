@@ -4,10 +4,8 @@ import { Subscription } from 'rxjs';
 import { CanvasEditorService } from '../canvas-editor.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { fabric } from 'fabric'; // Import Fabric.js
+import { fabric } from 'fabric'; 
 import { Ellipse } from '../../models/shapes/ellipse';
-import { CurvedLine } from '../../models/shapes/curved-line';
-import { AngleIndicator } from '../../models/shapes/angleIndicator';
 import { BaseShape } from '../../models/shapes/base-shape';
 import { Triangle } from '../../models/shapes/triangle';
 import { Rectangle } from '../../models/shapes/rectangle';
@@ -16,6 +14,8 @@ import { Line } from '../../models/shapes/line';
 import { Circle } from '../../models/shapes/circle';
 import { Text } from '../../models/shapes/text';
 import { ConnectedCircles } from '../../models/shapes/connected-circles';
+import { ClosedConnectedEllipses } from '../../models/shapes/closed-connected-ellipses';
+import { ClosedConnectedCircles } from '../../models/shapes/closed-connected-circles';
 @Component({
   selector: 'app-properties-sidebar',
   standalone: true,
@@ -79,6 +79,41 @@ export class PropertiesSidebarComponent {
   
   }
  
+  isCircle(): boolean {
+    return this.selectedObject instanceof Circle;
+  }
+
+  isRectangle(): boolean {
+    return this.selectedObject instanceof Rectangle;
+  }
+  istriangle(): boolean {
+    return this.selectedObject instanceof Triangle;
+  }
+
+  isLine(): boolean {
+    return this.selectedObject instanceof Line;
+  }
+
+  isEllipse(): boolean {
+    return this.selectedObject instanceof Ellipse;
+  }
+
+  isText(): boolean {
+    return this.selectedObject instanceof Text;
+  }
+
+  isPolygon(): boolean {
+    return this.selectedObject instanceof Polygon;
+  }
+  isConnectedCircles(): boolean {
+    return this.selectedObject instanceof ConnectedCircles;
+  }
+  isClosedConnectedCircles(): boolean {
+    return this.selectedObject instanceof ClosedConnectedCircles;
+  }
+  isClosedConnectedEllipses(): boolean {
+    return this.selectedObject instanceof ClosedConnectedEllipses;
+  }
     //Updates the properties displayed in the sidebar based on the selected object.
 
   updateProperties(): void {
@@ -133,16 +168,23 @@ export class PropertiesSidebarComponent {
       this.rectWidth = Number((triangle.width! * (triangle.scaleX || 1)).toFixed(0));
       this.rectHeight = Number((triangle.height! * (triangle.scaleY || 1)).toFixed(0));
     }
-      else if (this.selectedObject instanceof ConnectedCircles) {
+      else if (this.selectedObject instanceof ConnectedCircles||this.selectedObject instanceof ClosedConnectedCircles) {
         const props = this.selectedObject.getProperties();
         this.circleRadius = props.radius || 20;
         this.fillColor = props.fillColor || '#000000';
-        this.strokeColor = props.strokeColor || '#000000';
-        this.strokeWidth = props.strokeWidth || 2;
+      this.strokeColor = props.strokeColor || '#000000';
+      this.strokeWidth = props.lineThickness || 2;
+       }
+       else if (this.selectedObject instanceof ClosedConnectedEllipses) {
+        console.log('connected circles properties',this.selectedObject instanceof ClosedConnectedEllipses)
+        const props = this.selectedObject.getProperties();
+       this.ellipseRx=props.rx;
+       this.ellipseRy=props.ry;
+       }
   }
-  }
-  //Applies the changes made in the properties sidebar to the selected object.
 
+
+  //Applies the changes made in the properties sidebar to the selected object.
   applyPropertyChanges(): void {
     if (!this.selectedObject) return;
     const canvas = this.canvasEditorService.getCanvas();
@@ -160,19 +202,10 @@ export class PropertiesSidebarComponent {
     };
 
     const shape = this.selectedObject.getShape();
+    console.log('Current shape properties:', shape);
   
     switch (shape.type) {
-      case 'connectedCircles':
-        properties.radius = this.circleRadius;
-        properties.fillColor = this.fillColor;
-        properties.strokeColor = this.strokeColor;
-        properties.strokeWidth = this.strokeWidth;
-        break
-      case 'polygon':
-        properties.hatchColor = this.hatchColor;
-        properties.hatchThickness = this.hatchThickness;
-
-        break;
+      
       case 'circle':
         properties.circleRadius = this.circleRadius /shape.scaleX!;
         break;
@@ -207,6 +240,31 @@ export class PropertiesSidebarComponent {
         properties.textAlign = this.textAlign;
         properties.textTransform = this.textTransform;
         break;
+
+        
+      case 'polygon':
+        properties.hatchColor = this.hatchColor;
+        properties.hatchThickness = this.hatchThickness;
+        break;
+
+      case 'connectedCircles':
+        const cc = this.selectedObject as ConnectedCircles;
+        const currentProps = cc.getProperties();
+        console.log('ConnectedCircles current properties:', currentProps);
+        if (this.circleRadius !== cc.getProperties().radius) properties.radius = this.circleRadius;
+     
+        break
+
+      case 'closedConnectedCircles':
+        const ccc = this.selectedObject as ClosedConnectedCircles;
+        if (this.circleRadius !== ccc.getProperties().radius) properties.radius = this.circleRadius;        
+        break  
+
+      case 'closedConnectedEllipses':
+        const ce = this.selectedObject as ClosedConnectedEllipses;
+        if (this.ellipseRx !== ce.getProperties().rx) properties.rx = this.ellipseRx;
+        if (this.ellipseRy !== ce.getProperties().ry) properties.ry = this.ellipseRy;
+        break  
     }
 
     this.canvasEditorService.applyPropertyChanges(this.selectedObject, properties, canvas);
